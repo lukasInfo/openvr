@@ -5164,6 +5164,7 @@ namespace vr
 	typedef EVRFirmwareError VRFirmwareError;
 	typedef EVRCompositorError VRCompositorError;
 	typedef EVRScreenshotError VRScreenshotsError;
+	typedef void*(VR_CALLTYPE *VRGenericInterfaceCallback)(const char* pchInterfaceVersion, vr::HmdError* peError); // @epic
 
 	inline uint32_t &VRToken()
 	{
@@ -5404,6 +5405,12 @@ namespace vr
 			return m_pVRNotifications;
 		}
 		
+		// @epic
+		void SetGenericInterfaceCallback(VRGenericInterfaceCallback pCallback)
+		{
+			m_pVRGenericInterface = pCallback;
+		}
+
 	private:
 		IVRSystem			*m_pVRSystem;
 		IVRChaperone		*m_pVRChaperone;
@@ -5425,6 +5432,7 @@ namespace vr
 		IVRSpatialAnchors   *m_pVRSpatialAnchors;
 		IVRDebug			*m_pVRDebug;
 		IVRNotifications	*m_pVRNotifications;
+		VRGenericInterfaceCallback	m_pVRGenericInterface; // @epic
 	};
 
 	inline COpenVRContext &OpenVRInternal_ModuleContext()
@@ -5480,6 +5488,9 @@ namespace vr
 	
 	VR_INTERFACE uint32_t VR_CALLTYPE VR_InitInternal2( EVRInitError *peError, EVRApplicationType eApplicationType, const char *pStartupInfo );
 	VR_INTERFACE void VR_CALLTYPE VR_ShutdownInternal();
+
+	// @epic
+	inline void VR_SetGenericInterfaceCallback(VRGenericInterfaceCallback pCallback) { return OpenVRInternal_ModuleContext().SetGenericInterfaceCallback(pCallback); }
 
 	/** Finds the active installation of vrclient.dll and initializes it */
 	inline IVRSystem *VR_Init( EVRInitError *peError, EVRApplicationType eApplicationType, const char *pStartupInfo )
